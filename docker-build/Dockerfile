@@ -3,8 +3,11 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
 #
 
-FROM %%MYSQL_OPERATOR_PYTHON_DEPS%%
+FROM jas612/mysql-operator-python-deps:3.9.5 AS pip-stage
 
+FROM oraclelinux:8-slim
+
+COPY --from=pip-stage /usr/lib/mysqlsh/python-packages /usr/lib/mysqlsh/python-packages
 
 RUN rpm -U %%MYSQL_REPO_URL%%/%%MYSQL_CONFIG_PKG%%-el8.rpm \
   && microdnf update && echo "[main]" > /etc/dnf/dnf.conf \

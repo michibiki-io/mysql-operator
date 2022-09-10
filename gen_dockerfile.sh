@@ -6,7 +6,7 @@
 
 
 MYSQL_REPO_URL="http://repo.mysql.com"
-MYSQL_OPERATOR_PYTHON_DEPS="mysql-operator-python-deps"
+MYSQL_OPERATOR_PYTHON_DEPS="jas612/mysql-operator-python-deps"
 MYSQL_OPERATOR_PYTHON_DEPS_VERSION="3.9.5"
 MYSQL_SHELL_VERSION=8.0.30
 MYSQL_CONFIG_PKG="mysql80-community-release"
