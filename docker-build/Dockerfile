@@ -3,7 +3,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
 #
 
-FROM jas612/mysql-operator-python-deps:3.9.5 AS pip-stage
+FROM %%MYSQL_OPERATOR_PYTHON_DEPS%% AS pip-stage
 
 FROM oraclelinux:8-slim
 
