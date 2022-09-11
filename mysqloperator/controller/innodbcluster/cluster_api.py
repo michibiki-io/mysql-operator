@@ -115,6 +115,8 @@ class RouterSpec:
 
     podSpec: dict = {}
 
+    serviceSpec: dict = {}
+
     tlsSecretName: str = ""
 
     def parse(self, spec: dict, prefix: str) -> None:
@@ -129,6 +131,9 @@ class RouterSpec:
 
         if "podSpec" in spec:  # TODO - replace with something more specific
             self.podSpec = dget_dict(spec, "podSpec", prefix)
+
+        if "serviceSpec" in spec:
+            self.serviceSpec = dget_dict(spec, "serviceSpec", prefix)
 
 
 class InnoDBClusterSpec:

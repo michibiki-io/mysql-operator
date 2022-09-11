@@ -54,8 +54,14 @@ spec:
     tier: mysql
     mysql.oracle.com/cluster: {spec.name}
   type: ClusterIP
+  externalTrafficPolicy: Cluster
 """
-    return yaml.safe_load(tmpl)
+    service = yaml.safe_load(tmpl)
+    if spec.router.podSpec:
+        utils.merge_patch_object(service["spec"],
+                                 spec.router.serviceSpec, "spec.router.serviceSpec")
+
+    return service
 
 
 def prepare_router_secrets(spec: InnoDBClusterSpec) -> dict:
