@@ -57,7 +57,7 @@ spec:
   externalTrafficPolicy: Cluster
 """
     service = yaml.safe_load(tmpl)
-    if spec.router.podSpec:
+    if spec.router.serviceSpec:
         utils.merge_patch_object(service["spec"],
                                  spec.router.serviceSpec, "spec.router.serviceSpec")
 
