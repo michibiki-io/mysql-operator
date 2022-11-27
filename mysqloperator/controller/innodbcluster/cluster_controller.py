@@ -212,6 +212,10 @@ class ClusterController:
                     self.cluster.update_cluster_info({
                         "initialDataSource": f"dump={self.cluster.parsed_spec.initDB.dump.storage.ociObjectStorage.bucketName}",
                     })
+                elif self.cluster.parsed_spec.initDB.dump.storage.s3:
+                    self.cluster.update_cluster_info({
+                        "initialDataSource": f"dump={self.cluster.parsed_spec.initDB.dump.storage.s3.bucketName}",
+                    })
                 elif self.cluster.parsed_spec.initDB.dump.storage.persistentVolumeClaim:
                     self.cluster.update_cluster_info({
                         "initialDataSource": f"dump={self.cluster.parsed_spec.initDB.dump.storage.persistentVolumeClaim}",
@@ -316,7 +320,6 @@ class ClusterController:
 
         # update the router deployment
         n = self.cluster.parsed_spec.router.instances
-        logger.info(f"ROUTER: {n=} {type(n)=}")
         if n:
             logger.debug(f"Setting router replicas to {n}")
             router_objects.update_size(self.cluster, n, logger)

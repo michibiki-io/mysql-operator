@@ -12,6 +12,7 @@ import unittest
 import subprocess
 import logging
 import os
+from utils import auxutil
 
 from utils.auxutil import isotime
 from . import fmt
@@ -474,7 +475,7 @@ class OperatorTest(unittest.TestCase):
     def get_pod(self, name, ns=None):
         return PodHelper(self, ns if ns else self.ns, name)
 
-    def wait_ic(self, name, status_list, num_online=None, ns=None, timeout=500, probe_time=None):
+    def wait_ic(self, name, status_list, num_online=None, ns=None, timeout=600, probe_time=None):
         """
         Wait for given ic object to reach one of the states in the list.
         Aborts on timeout or when an unexpected error is detected in the operator.
@@ -534,8 +535,41 @@ class OperatorTest(unittest.TestCase):
         kutil.wait_pod_gone(ns or self.ns, name,
                             checkabort=self.check_operator_exceptions)
 
-    def wait_routers_gone(self, name_pattern, timeout=180, ns=None):
-        routers = kutil.ls_pod(ns or self.ns, name_pattern)
-        for router in routers:
-            kutil.wait_pod_gone(ns or self.ns, router, timeout=timeout,
+    def wait_pods_gone(self, name_pattern, timeout=180, ns=None):
+        pods = kutil.ls_pod(ns or self.ns, name_pattern)
+        for pod in pods:
+            kutil.wait_pod_gone(ns or self.ns, pod["NAME"], timeout=timeout,
                                 checkabort=self.check_operator_exceptions)
+
+    def wait_routers_gone(self, name_pattern, timeout=180, ns=None):
+        self.wait_pods_gone(name_pattern, timeout, ns)
+
+    def get_instances_by_role(self, instance="mycluster-0", user="root", password="sakila"):
+        primaries = []
+        secondaries = []
+        with mutil.MySQLPodSession(self.ns, instance, user, password) as session:
+            members = session.query_sql(
+                "SELECT member_host, member_role FROM performance_schema.replication_group_members ORDER BY member_host").fetch_all()
+
+            print(members)
+
+            for mhost, mrole in members:
+                instance_name = auxutil.extract_instance_name(mhost)
+                if mrole == "PRIMARY":
+                    primaries.append(instance_name)
+                elif mrole == "SECONDARY":
+                    secondaries.append(instance_name)
+                else:
+                    raise Exception(f"unexpected role {mrole}")
+
+        return (primaries, secondaries)
+
+    def get_primary_instance(self, instance="mycluster-0", user="root", password="sakila"):
+        primaries, _ = self.get_instances_by_role(instance, user, password)
+        if len(primaries) != 1:
+            raise Exception(f"expected one primary, but got {primaries}")
+        return primaries[0]
+
+    def get_secondary_instances(self, instance="mycluster-0", user="root", password="sakila"):
+        _, secondaries = self.get_instances_by_role(instance, user, password)
+        return secondaries

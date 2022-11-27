@@ -11,7 +11,7 @@ COPY --from=pip-stage /usr/lib/mysqlsh/python-packages /usr/lib/mysqlsh/python-p
 
 RUN rpm -U %%MYSQL_REPO_URL%%/%%MYSQL_CONFIG_PKG%%-el8.rpm \
   && microdnf update && echo "[main]" > /etc/dnf/dnf.conf \
-  && microdnf install -y mysql-shell-%%MYSQL_SHELL_VERSION%% \
+  && microdnf install --enablerepo=%%MYSQL_SHELL_REPO%% -y mysql-shell-%%MYSQL_SHELL_VERSION%% \
   && microdnf remove %%MYSQL_CONFIG_PKG%% \
   && microdnf clean all
 

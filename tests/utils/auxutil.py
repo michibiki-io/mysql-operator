@@ -1,4 +1,4 @@
-# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
 #
@@ -11,6 +11,9 @@ from ipaddress import IPv4Address
 
 def isotime() -> str:
     return datetime.datetime.utcnow().replace(microsecond=0).isoformat()+"Z"
+
+def utctime() -> str:
+    return datetime.datetime.utcnow().replace(microsecond=0).isoformat(sep=' ')
 
 def b64encode(s: str) -> str:
     return base64.b64encode(bytes(s, "utf8")).decode("ascii")
@@ -36,6 +39,9 @@ def resolve_registry_url(registry_url):
     host_ip4 = IPv4Address(host_address)
     is_loopback = host_ip4.is_loopback
     return host, port, is_loopback
+
+def extract_instance_name(host):
+    return host.split(".")[0]
 
 def merge_patch_object(base: dict, patch: dict, prefix: str = "", key: str = "") -> None:
     assert not key, "not implemented"  # TODO support key
